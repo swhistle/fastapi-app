@@ -1,5 +1,5 @@
 import datetime
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -42,5 +42,8 @@ def user(id: int):
     with connection.cursor() as cursor:
         cursor.execute("""SELECT gender, age, city FROM "user" WHERE id='%s'""" % id)
         results = cursor.fetchone()
+
+        if not results:
+            raise HTTPException(404, detail='user not found')
 
         return User(**results)
