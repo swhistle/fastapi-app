@@ -1,5 +1,16 @@
 import datetime
 from fastapi import FastAPI
+from pydantic import BaseModel
+
+
+class User(BaseModel):
+    gender: int
+    age: int
+    city: str
+
+    class Config:
+        orm_mode = True
+
 
 app = FastAPI()
 
