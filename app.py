@@ -13,6 +13,14 @@ class User(BaseModel):
     class Config:
         orm_mode = True
 
+class PostResponse(BaseModel):
+    id: int
+    text: str
+    topic: str
+
+    class Config:
+        orm_mode = True
+
 def get_db():
     connection = psycopg2.connect(
         database='startml',
@@ -49,3 +57,14 @@ def user(id: int, db=Depends(get_db)):
             raise HTTPException(404, detail='user not found')
 
         return User(**results)
+
+@app.get('/post/{id}', response_model=PostResponse)
+def user(id: int, db=Depends(get_db)):
+    with db.cursor() as cursor:
+        cursor.execute("""SELECT id, text, topic FROM "post" WHERE id='%s'""" % id)
+        results = cursor.fetchone()
+
+        if not results:
+            raise HTTPException(404, detail='post not found')
+
+        return PostResponse(**results)
