@@ -1,5 +1,5 @@
 import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -13,10 +13,8 @@ class User(BaseModel):
     class Config:
         orm_mode = True
 
-
-app = FastAPI()
-
-connection = psycopg2.connect(
+def get_db():
+    connection = psycopg2.connect(
         database='startml',
         host='postgres.lab.karpov.courses',
         user='robot-startml-ro',
@@ -24,6 +22,10 @@ connection = psycopg2.connect(
         port=6432,
         cursor_factory=RealDictCursor
     )
+
+    return connection
+
+app = FastAPI()
 
 @app.get("/")
 def root() -> str:
@@ -38,8 +40,8 @@ def validate(user: User):
     return f'Will add user: {user.name} {user.surname} with age {user.age}'
 
 @app.get('/user/{id}', response_model=User)
-def user(id: int):
-    with connection.cursor() as cursor:
+def user(id: int, db=Depends(get_db)):
+    with db.cursor() as cursor:
         cursor.execute("""SELECT gender, age, city FROM "user" WHERE id='%s'""" % id)
         results = cursor.fetchone()
 
