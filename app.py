@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -51,3 +52,14 @@ def get_post_by_id(id: int, db: Session=Depends(get_db)):
 @app.get('/post/{id}/feed', response_model=List[FeedGet])
 def get_feed_by_post_id(id: int, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Feed).filter(Feed.post_id == int(id)).order_by(Feed.time.desc()).limit(limit).all()
+
+@app.get('/post/recommendations/', response_model=List[PostGet])
+def get_recommendations(id: int, limit: int = 10, db: Session = Depends(get_db)):
+    return db\
+        .query(Post)\
+        .join(Feed, Post.id == Feed.post_id)\
+        .filter(Feed.action == 'like')\
+        .group_by(Post.id)\
+        .order_by(func.count(Feed.action).desc())\
+        .limit(limit)\
+        .all()
