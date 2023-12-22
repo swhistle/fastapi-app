@@ -47,3 +47,7 @@ def user(id: int, db: Session=Depends(get_db)):
         raise HTTPException(404, detail='post not found')
 
     return post[0]
+
+@app.get('/post/{id}/feed', response_model=List[FeedGet])
+def user(id: int, limit: int = 10, db: Session = Depends(get_db)):
+    return db.query(Feed).filter(Feed.post_id == int(id)).limit(limit).all()
