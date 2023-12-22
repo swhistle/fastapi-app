@@ -23,7 +23,7 @@ def get_all_users(limit: int = 10, db: Session = Depends(get_db)):
     return db.query(User).limit(limit).all()
 
 @app.get('/user/{id}', response_model=UserGet)
-def user(id: int, db: Session = Depends(get_db)):
+def get_user_by_id(id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == int(id)).all()
 
     if not user:
@@ -32,15 +32,15 @@ def user(id: int, db: Session = Depends(get_db)):
     return user[0]
 
 @app.get('/user/{id}/feed', response_model=List[FeedGet])
-def user(id: int, limit: int = 10, db: Session = Depends(get_db)):
+def get_feed_by_user_id(id: int, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Feed).filter(Feed.user_id == int(id)).order_by(Feed.time.desc()).limit(limit).all()
 
 @app.get('/post/all', response_model=List[PostGet])
-def get_all_users(limit: int = 10, db: Session = Depends(get_db)):
+def get_all_posts(limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Post).limit(limit).all()
 
 @app.get('/post/{id}', response_model=PostGet)
-def user(id: int, db: Session=Depends(get_db)):
+def get_post_by_id(id: int, db: Session=Depends(get_db)):
     post = db.query(Post.id, Post.text, Post.topic).filter(Post.id == int(id)).all()
 
     if not post:
@@ -49,5 +49,5 @@ def user(id: int, db: Session=Depends(get_db)):
     return post[0]
 
 @app.get('/post/{id}/feed', response_model=List[FeedGet])
-def user(id: int, limit: int = 10, db: Session = Depends(get_db)):
+def get_feed_by_post_id(id: int, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Feed).filter(Feed.post_id == int(id)).order_by(Feed.time.desc()).limit(limit).all()
