@@ -25,8 +25,8 @@ class PostGet(BaseModel):
 
 
 class FeedGet(BaseModel):
-    user_id: int
-    post_id: int
+    user: UserGet
+    post: PostGet
     action: str
     time: datetime
 

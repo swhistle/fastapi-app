@@ -33,7 +33,7 @@ def user(id: int, db: Session = Depends(get_db)):
 
 @app.get('/user/{id}/feed', response_model=List[FeedGet])
 def user(id: int, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(Feed).filter(Feed.user_id == int(id)).limit(limit).all()
+    return db.query(Feed).filter(Feed.user_id == int(id)).order_by(Feed.time.desc()).limit(limit).all()
 
 @app.get('/post/all', response_model=List[PostGet])
 def get_all_users(limit: int = 10, db: Session = Depends(get_db)):
@@ -50,4 +50,4 @@ def user(id: int, db: Session=Depends(get_db)):
 
 @app.get('/post/{id}/feed', response_model=List[FeedGet])
 def user(id: int, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(Feed).filter(Feed.post_id == int(id)).limit(limit).all()
+    return db.query(Feed).filter(Feed.post_id == int(id)).order_by(Feed.time.desc()).limit(limit).all()
