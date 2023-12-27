@@ -7,6 +7,7 @@ import os
 load_dotenv()
 
 SQLALCHEMY_DATABASE_URL = URL.create(
+    # .env
     "postgresql",
     username=os.environ["POSTGRES_USER"],
     password=os.environ["POSTGRES_PASSWORD"],
