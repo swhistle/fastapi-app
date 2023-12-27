@@ -2,12 +2,18 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List
+import yaml
 
 from database import SessionLocal
 from table_post import Post
 from table_user import User
 from table_feed import Feed
 from schema import UserGet, PostGet, FeedGet
+
+def config():
+    with open('config.yaml', 'r') as config_file:
+        return yaml.safe_load(config_file)
+
 
 def get_db():
     with SessionLocal() as db:
@@ -33,8 +39,8 @@ def get_user_by_id(id: int, db: Session = Depends(get_db)):
     return user[0]
 
 @app.get('/user/{id}/feed', response_model=List[FeedGet])
-def get_feed_by_user_id(id: int, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(Feed).filter(Feed.user_id == int(id)).order_by(Feed.time.desc()).limit(limit).all()
+def get_feed_by_user_id(id: int, limit: int = 10, db: Session = Depends(get_db), config: dict = Depends(config)):
+    return db.query(Feed).filter(Feed.user_id == int(id)).filter(Feed.time >= config['feed_start_date']).order_by(Feed.time.desc()).limit(limit).all()
 
 @app.get('/post/all', response_model=List[PostGet])
 def get_all_posts(limit: int = 10, db: Session = Depends(get_db)):
