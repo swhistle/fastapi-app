@@ -3,12 +3,13 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List
 import yaml
+import uvicorn
 
-from database import SessionLocal
-from table_post import Post
-from table_user import User
-from table_feed import Feed
-from schema import UserGet, PostGet, FeedGet
+from src.db.database import SessionLocal
+from src.tables.table_post import Post
+from src.tables.table_user import User
+from src.tables.table_feed import Feed
+from src.schema.schema import UserGet, PostGet, FeedGet
 
 def config():
     with open('config.yaml', 'r') as config_file:
@@ -69,3 +70,6 @@ def get_recommendations(id: int, limit: int = 10, db: Session = Depends(get_db))
         .order_by(func.count(Feed.action).desc())\
         .limit(limit)\
         .all()
+
+
+uvicorn.run(app)
