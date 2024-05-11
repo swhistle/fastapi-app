@@ -1,6 +1,8 @@
-# Fastapi app
+# Feed app
+Application with recommendation system 
 
 ### Run app:
- -  export PYTHONPATH=$PYTHONPATH:$PWD
- - source venv/bin/activate
- - python3 src/app.py
+ - $ export PYTHONPATH=$PYTHONPATH:$PWD
+ - $ source venv/bin/activate
+ - $ pip install -r requirements.txt
+ - $ python3 src/app.py
