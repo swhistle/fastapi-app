@@ -2,5 +2,5 @@
 __pycache__/
 .env
 venv/
-internals/
+internals/data
 .DS_Store
