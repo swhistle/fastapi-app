@@ -1,4 +1,4 @@
-# Feed app
+# Posts recommendation app
 Application with recommendation system 
 
 ### Run app:
