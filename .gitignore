@@ -3,4 +3,5 @@ __pycache__/
 .env
 venv/
 internals/data
+internals/scripts/training/catboost_info/
 .DS_Store
