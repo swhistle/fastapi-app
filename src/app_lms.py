@@ -94,5 +94,3 @@ users_features = load_features()
 posts_features = load_posts_features()
 posts_content = load_posts_content()
 model = load_models()
-
-uvicorn.run(app)
