@@ -6,7 +6,6 @@ from datetime import datetime
 from sqlalchemy import create_engine
 import pandas as pd
 from typing import List
-import uvicorn
 
 from schema import PostGet
 
@@ -51,19 +50,29 @@ def load_posts_content() -> pd.DataFrame:
 
     return batch_load_sql(query)
 
+users_features = load_features()
+posts_features = load_posts_features()
+posts_content = load_posts_content()
+model = load_models()
 
 app = FastAPI()
-
 
 @app.get('/post/recommendations/', response_model=List[PostGet])
 def get_recommendations(id: int, time: datetime, limit: int = 10):
     df_recommendations = pd.DataFrame()
 
     user_id = id
-    df_users_item = users_features[users_features['user_id'] == user_id].iloc[0]
+
+    df_users_item = users_features[users_features['user_id'] == user_id]
 
     if df_users_item.empty:
-        raise HTTPException(404, detail='user not found')
+        return []
+
+    df_users_item = df_users_item.iloc[0]
+
+    df_users_item['month'] = time.month
+    df_users_item['dayofweek'] = time.weekday()
+    df_users_item['hour'] = time.hour
 
     # Объединение датафреймов с данными пользователя и постов
     data_merged = posts_features.assign(**df_users_item)
@@ -88,9 +97,3 @@ def get_recommendations(id: int, time: datetime, limit: int = 10):
     posts_recommendations_response = posts_recommendations.to_dict('records')
 
     return posts_recommendations_response
-
-
-users_features = load_features()
-posts_features = load_posts_features()
-posts_content = load_posts_content()
-model = load_models()

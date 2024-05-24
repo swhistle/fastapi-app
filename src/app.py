@@ -107,14 +107,21 @@ def get_feed_by_post_id(id: int, limit: int = 10, db: Session = Depends(get_db))
     return db.query(Feed).filter(Feed.post_id == int(id)).order_by(Feed.time.desc()).limit(limit).all()
 
 @app.get('/post/recommendations/', response_model=List[PostGet])
-def get_recommendations(id: int, time, limit: int = 5):
+def get_recommendations(id: int, time: datetime, limit: int = 10):
     df_recommendations = pd.DataFrame()
 
     user_id = id
-    df_users_item = users_features[users_features['user_id'] == user_id].iloc[0]
+
+    df_users_item = users_features[users_features['user_id'] == user_id]
 
     if df_users_item.empty:
-        raise HTTPException(404, detail='user not found')
+        return []
+
+    df_users_item = df_users_item.iloc[0]
+
+    df_users_item['month'] = time.month
+    df_users_item['dayofweek'] = time.weekday()
+    df_users_item['hour'] = time.hour
 
     # Объединение датафреймов с данными пользователя и постов
     data_merged = posts_features.assign(**df_users_item)
